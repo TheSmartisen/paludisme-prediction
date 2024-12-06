@@ -1,0 +1,2 @@
+threshold: 0.41
+img_size: (128, 128)

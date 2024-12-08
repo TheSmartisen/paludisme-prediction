@@ -1,2 +1,2 @@
-threshold: 0.41
+threshold: 0.4603976607322693
 img_size: (128, 128)

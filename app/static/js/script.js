@@ -65,8 +65,14 @@ async function sendImageToApi(file) {
             }
 
             // Ajouter les événements pour les boutons de feedback
-            thumbsUp.onclick = () => sendFeedback(file, label, true);
-            thumbsDown.onclick = () => sendFeedback(file, label, false);
+            thumbsUp.onclick = () => {
+                sendFeedback(label, true);
+                resultModal.hide();
+            }
+            thumbsDown.onclick = () => {
+                sendFeedback(label, false);
+                resultModal.hide();
+            }
             
             resultModal.show();
         } else {
@@ -79,13 +85,14 @@ async function sendImageToApi(file) {
     }
 }
 
-async function sendFeedback(file, label, isCorrect) {
+async function sendFeedback(label, isCorrect) {
 
     try {
-        const feedback = new FormData();
-        feedback.append('label', label);
-        feedback.append('correct', isCorrect);
-        feedback.append('image', file);
+        const feedback = {
+            label: label,
+            correct: isCorrect || false,
+            image: selectedImage.src
+        }
 
         const response = await fetch('/api/v1/feedback', {
             method: 'POST',
@@ -100,6 +107,7 @@ async function sendFeedback(file, label, isCorrect) {
         } else {
             alert("Erreur lors de l'enregistrement du feedback.");
         }
+
     } catch (error) {
         alert(`Erreur réseau : ${error.message}`);
     }

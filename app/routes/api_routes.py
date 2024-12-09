@@ -62,18 +62,19 @@ def feedback():
 
         label = data.get('label')
         is_correct = data.get('correct')
-        image_base64 = data.get('image')
+        base64_image = data.get('image')
 
         # Vérifier les entrées
-        if label not in Config.LABEL_CLASS or is_correct not in [True, False] or not image_base64:
+        if label not in Config.LABEL_CLASS or is_correct not in [True, False]:
             return jsonify({"error": "Paramètres invalides"}), 400
 
         # Décoder l'image
-        try:
-            image_data = base64.b64decode(image_base64)
-            image = Image.open(io.BytesIO(image_data))
-        except (base64.binascii.Error, UnidentifiedImageError):
-            return jsonify({"error": "L'image encodée est invalide ou corrompue"}), 400
+        # Décoder l'image
+        # Découper pour ne garder que les données après "base64,"
+        header, base64_data = base64_image.split(",", 1)
+
+        # Décoder et sauvegarder comme fichier image
+        image_data = base64.b64decode(base64_data)
 
         # Déterminer le chemin de sauvegarde
         feedback_type = "Correct" if is_correct else "Incorrect"
@@ -84,9 +85,10 @@ def feedback():
         file_path = os.path.join(save_path, filename)
 
         # Sauvegarder l'image
-        image.save(file_path)
+        with open(file_path, "wb") as image_file:
+            image_file.write(image_data)
 
-        return jsonify({"message": "Feedback enregistré avec succès."}), 200
+        return jsonify({"message": f"Feedback enregistré avec succès."}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

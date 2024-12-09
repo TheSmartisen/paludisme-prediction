@@ -2,9 +2,20 @@ from flask import Blueprint, request, jsonify
 from config import Config
 import tensorflow as tf
 from app.modules.ia_module import load_and_predict_with_preprocessing
+import os
+from werkzeug.utils import secure_filename
+from PIL import Image, UnidentifiedImageError
+import base64
+import io
 
 # Define the blueprint for the API
 api_bp = Blueprint('api_bp', __name__)
+
+for category in Config.LABEL_CLASS:
+    for feedback_type in Config.FEEDBACK_TYPES:
+        path = os.path.join(Config.BASE_DATA_PATH, category, feedback_type)
+        os.makedirs(path, exist_ok=True)
+
 
 @api_bp.route('/api/v1/health', methods=['GET'])
 def health():
@@ -41,5 +52,41 @@ def predict_malaria():
             "prediction_binary": int(predictions_binary),
             "prediction_label": Config.LABEL_CLASS[int(predictions_binary)]
         })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@api_bp.route('/api/v1/feedback', methods=['POST'])
+def feedback():
+    try:
+        data = request.get_json()
+
+        label = data.get('label')
+        is_correct = data.get('correct')
+        image_base64 = data.get('image')
+
+        # Vérifier les entrées
+        if label not in Config.LABEL_CLASS or is_correct not in [True, False] or not image_base64:
+            return jsonify({"error": "Paramètres invalides"}), 400
+
+        # Décoder l'image
+        try:
+            image_data = base64.b64decode(image_base64)
+            image = Image.open(io.BytesIO(image_data))
+        except (base64.binascii.Error, UnidentifiedImageError):
+            return jsonify({"error": "L'image encodée est invalide ou corrompue"}), 400
+
+        # Déterminer le chemin de sauvegarde
+        feedback_type = "Correct" if is_correct else "Incorrect"
+        save_path = os.path.join(Config.BASE_DATA_PATH, label, feedback_type)
+
+        # Générer un nom de fichier unique
+        filename = secure_filename(f"feedback_{label}_{feedback_type}_{len(os.listdir(save_path)) + 1}.png")
+        file_path = os.path.join(save_path, filename)
+
+        # Sauvegarder l'image
+        image.save(file_path)
+
+        return jsonify({"message": "Feedback enregistré avec succès."}), 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500

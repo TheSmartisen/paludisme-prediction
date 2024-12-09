@@ -63,6 +63,11 @@ async function sendImageToApi(file) {
             } else {
                 predictionResult.innerHTML = `<strong class="prediction-negative">Non Infecté - ${probability}%</strong>`;
             }
+
+            // Ajouter les événements pour les boutons de feedback
+            thumbsUp.onclick = () => sendFeedback(file, label, true);
+            thumbsDown.onclick = () => sendFeedback(file, label, false);
+            
             resultModal.show();
         } else {
             alert('Erreur lors de la prédiction. Veuillez réessayer.');
@@ -71,5 +76,31 @@ async function sendImageToApi(file) {
         alert(`Erreur réseau : ${error.message}`);
     } finally {
         loader.style.display = 'none';
+    }
+}
+
+async function sendFeedback(file, label, isCorrect) {
+
+    try {
+        const feedback = new FormData();
+        feedback.append('label', label);
+        feedback.append('correct', isCorrect);
+        feedback.append('image', file);
+
+        const response = await fetch('/api/v1/feedback', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(feedback),
+        });
+
+        if (response.ok) {
+            alert('Feedback enregistré avec succès. Merci !');
+        } else {
+            alert("Erreur lors de l'enregistrement du feedback.");
+        }
+    } catch (error) {
+        alert(`Erreur réseau : ${error.message}`);
     }
 }

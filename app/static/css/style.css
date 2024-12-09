@@ -74,11 +74,11 @@ body {
 .custom-button {
     background: #88B68B !important;
     border-color: #88B68B !important;
-    color: white;
+    color: white !important;
 }
 
 .custom-button.not-ok {
     background: #FF6B6B !important;
     border-color: #FF6B6B !important;
-    color: white;
+    color: white !important;
 }

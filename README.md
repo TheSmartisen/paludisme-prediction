@@ -1,6 +1,24 @@
-V# **Malaria Project**
+# **Malaria Project**
 
 Ce projet est conçu pour une application liée à la prédiction de maladies grâce à l'intelligence artificielle. Voici une description complète des fichiers et sous-dossiers.
+
+---
+
+## **Aperçu de l'Application**
+
+L'application web offre une interface simple pour l'analyse des images et la gestion des prédictions.
+
+### **Page Principale**
+La page principale permet de charger une image pour effectuer une prédiction. Voici un aperçu de l'interface :
+
+![Application](app/static/images/Application.png)
+
+---
+
+### **Résultat de l'Analyse**
+Après l'analyse d'une image, l'application retourne un résultat avec la prédiction et une estimation de confiance. Voici un exemple de l'affichage des résultats :
+
+![Résultat de l'Application](app/static/images/ResultatApplication.png)
 
 ---
 

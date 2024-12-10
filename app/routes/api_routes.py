@@ -4,9 +4,7 @@ import tensorflow as tf
 from app.modules.ia_module import load_and_predict_with_preprocessing
 import os
 from werkzeug.utils import secure_filename
-from PIL import Image, UnidentifiedImageError
 import base64
-import io
 
 # Define the blueprint for the API
 api_bp = Blueprint('api_bp', __name__)

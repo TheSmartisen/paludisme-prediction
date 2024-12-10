@@ -196,8 +196,10 @@ Content-Type: application/json
 ```json
 200 OK
 {
-  "prediction": "infected",
-  "confidence": 0.95
+   "prediction_probabilities": 0.12340,
+   "prediction_score": 98,
+   "prediction_binary": 0,
+   "prediction_label": "Parasitized"
 }
 ```
 
@@ -224,18 +226,11 @@ GET /api/v1/health
 #### **Exemple de réponse :**
 ```json
 200 OK
-{
-  "status": "healthy",
-  "uptime": "72:15:36"  # Temps écoulé depuis le démarrage
-}
 ```
 
 En cas de problème (rare) :
 ```json
 500 Internal Server Error
-{
-  "error": "Service non disponible"
-}
 ```
 
 ---
